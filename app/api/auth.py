@@ -3,16 +3,17 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from typing import Annotated
-from app.schemas.auth_schema import AuthRequest, RegisterRequest
+from app.schemas.auth_schema import RegisterRequest
 from app.services.auth_service import authentic_user
 from app.core.security import create_access_token
 from app.core.exceptions import EmailAlreadyExistsError
-from app.services.user_service import create_new_user
+from app.services.user_service import UserService
 from app.schemas.user_schema import UserRequest
 
 
 router = APIRouter(prefix='/auth', tags=['auth'])
 
+user_service = UserService()
 db_dependency = Annotated[Session, Depends(get_db)]
 
 @router.post("/register")
@@ -26,7 +27,7 @@ def register_user(input: RegisterRequest, db: db_dependency):
             is_active=True
         )
         
-        create_new_user(db, user_input)
+        user_service.create_new_user(user_input, db)
         return {"message": "User registered successfully"}
 
     except EmailAlreadyExistsError:

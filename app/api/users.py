@@ -6,29 +6,35 @@ from typing import Annotated
 from app.core.exceptions import EmailAlreadyExistsError, UserNotFoundError
 from app.models.user_model import User
 from app.schemas.user_schema import UserRequest, UserResponse, UserUpdateRequest
-from app.services.user_service import get_users, get_user_by_id, create_new_user, update_existing_user, delete_existing_user
-
+from app.services.user_service import UserService
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
+user_service = UserService()
 db_dependency = Annotated[Session, Depends(get_db)]
 user_dependency = Annotated[User, Depends(get_current_user)]
 
 @router.get("/",response_model=list[UserResponse])
 def fetch_all_users(db: db_dependency):
-    users = get_users(db)
+    users = user_service.get_all_users(db)
     return users
 
 @router.get("/{user_id}", response_model=UserResponse)
 def fetch_user_by_id(user_id: int, db: db_dependency):
-    user = get_user_by_id(db, user_id)
+    # user = get_user_by_id(db, user_id)
+    # if not user:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_404_NOT_FOUND,
+    #         detail="User with ID not found"
+    #     )
+    user = user_service.get_user_by_id(user_id, db)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User with ID not found"
         )
-    
     return user
+    
 
 @router.post("/", response_model=UserResponse)
 def add_new_user(input: UserRequest, db: db_dependency, current_user: user_dependency):
@@ -40,7 +46,7 @@ def add_new_user(input: UserRequest, db: db_dependency, current_user: user_depen
         )
     
     try:
-        return create_new_user(db, input)
+        return user_service.create_new_user(input, db)
     except EmailAlreadyExistsError:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -69,7 +75,7 @@ def update_user(
         )
 
     try:
-        return update_existing_user(db, input, user_id)
+        return user_service.update_existing_user(user_id, input, db)
     except UserNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -90,7 +96,7 @@ def delete_user(user_id: int, db: db_dependency, current_user: user_dependency):
             detail="Not authorized to delete the user"
         )
     
-    success = delete_existing_user(db, user_id)
+    success = user_service.delete_existing_user(user_id, db)
     
     if not success:
         raise HTTPException(
