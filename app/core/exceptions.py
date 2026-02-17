@@ -4,3 +4,6 @@ class EmailAlreadyExistsError(Exception):
 
 class UserNotFoundError(Exception):
     pass
+
+class UsernameALreadyExistsError(Exception):
+    pass

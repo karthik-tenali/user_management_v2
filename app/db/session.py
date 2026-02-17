@@ -1,10 +1,12 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from app.core.settings import settings
 
-engine = create_engine(settings.DATABASE_URL, connect_args={"check_same_thread": False})
-
-
+engine = create_engine(
+    settings.DATABASE_URL,
+    pool_pre_ping=True,
+    future=True
+    )
 
 session_local = sessionmaker(
     autoflush= False, 
@@ -12,7 +14,9 @@ session_local = sessionmaker(
     bind=engine
 )
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    pass
+
 
 def get_db():
     database = session_local()
