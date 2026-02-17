@@ -19,7 +19,7 @@ class Book(Base):
     title: Mapped[str] = mapped_column(String(200), nullable=False)
     author: Mapped[str] = mapped_column(String(100), nullable=False)
     publisher: Mapped[str] = mapped_column(String(100), nullable=True)
-
+    edition: Mapped[str] = mapped_column(String(100), nullable= True)
     published_date: Mapped[date] = mapped_column(Date, nullable=True)
     page_count: Mapped[int] = mapped_column(Integer, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(),nullable=False )

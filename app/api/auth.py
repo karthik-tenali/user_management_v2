@@ -43,9 +43,11 @@ async def login_user(db: db_dependency, form_data: OAuth2PasswordRequestForm = D
         )
         
     token = create_access_token(user.uid, user.email)
+    refresh_token = create_access_token(user.uid, user.email, refresh=True)
     
     return {
         "access_token": token,
+        "refresh_token": refresh_token,
         "token_type": "bearer"
     }
     

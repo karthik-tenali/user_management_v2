@@ -25,7 +25,7 @@ async def get_db():
     async with AsyncSessionLocal() as db:
         yield db
 
-async def init_db():
-    from app.models.book_model import Book
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+# async def init_db():
+#     from app.models.book_model import Book
+#     async with engine.begin() as conn:
+#         await conn.run_sync(Base.metadata.create_all)

@@ -22,14 +22,14 @@ async def get_current_user( db: db_dependency, token: str = Depends(oauth_scheme
     if not payload:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token payload-paylaod",
+            detail="Invalid token payload",
         )
     
     uid = payload.get('sub')
     if not uid:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token payload-UUID",
+            detail="Invalid token payload",
         )
     result = await db.execute(select(User).where(User.uid == uid))
     user = result.scalar_one_or_none()

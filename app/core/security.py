@@ -14,18 +14,18 @@ def verify_password(password: str, hashed_password: str):
 
 
 
-def create_access_token(uid: uuid.UUID, email: str) -> str:
+def create_access_token(uid: uuid.UUID, email: str, refresh: bool = False) -> str:
     
     expire = datetime.now(timezone.utc) + timedelta(minutes=30)
     
     payload = {
         "sub": str(uid),          
         "email": email,
-        "exp": expire             
-    }
+        "exp": expire,
+        "refresh": refresh             
+    }   
     
     token = jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-    # print(token)
     return token
 
 def decode_access_token(token: str):
