@@ -2,11 +2,12 @@ from typing import Annotated
 import uuid
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.api.dependencies import get_current_user
 from app.db.session import get_db
 from app.services.book_service import BookService
 from app.schema.book_schema import BookCreateRequest, BookUpdateRequest, BookResponse
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 service = BookService()
 
 db_dependency = Annotated[AsyncSession, Depends(get_db)]
