@@ -2,10 +2,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from app.core.security import create_access_token
-from app.schema.auth_schema import UserRequest, UserResponse
+from app.schema.user_schema import UserRequest, UserResponse
 from sqlalchemy.orm import Session
 from app.db.session import get_db
-from app.services.auth_service import UserService
+from app.services.user_service import UserService
 from app.core.exceptions import EmailAlreadyExistsError, UsernameALreadyExistsError
 
 router = APIRouter()

@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.api.dependencies import get_current_user
 from app.db.session import get_db
+from app.models.user_model import User
 from app.services.book_service import BookService
 from app.schema.book_schema import BookCreateRequest, BookUpdateRequest, BookResponse
 
@@ -11,6 +12,7 @@ router = APIRouter(dependencies=[Depends(get_current_user)])
 service = BookService()
 
 db_dependency = Annotated[Session, Depends(get_db)]
+current_user = Annotated[User, Depends(get_current_user)]
 
 @router.get("/", response_model=list[BookResponse])
 def fetch_all_books(db: db_dependency):
@@ -27,8 +29,8 @@ def fetch_book_by_id(book_id: uuid.UUID, db: db_dependency):
     return book
 
 @router.post("/", response_model=BookResponse)
-def create_new_book(book_data: BookCreateRequest, db: db_dependency):
-    new_book = service.create_book(book_data, db)
+def create_new_book(book_data: BookCreateRequest, db: db_dependency, user: current_user):
+    new_book = service.create_book(book_data, db, user.uid)
     return new_book
 
 @router.put("/{book_id}",response_model=BookResponse)

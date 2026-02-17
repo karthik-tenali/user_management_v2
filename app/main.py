@@ -9,7 +9,7 @@ version = 'v1'
 @asynccontextmanager
 async def life_span(app: FastAPI):
     print("Server is starting ....")
-    Base.metadata.create_all(bind=engine)
+    # Base.metadata.create_all(bind=engine)
     yield
     print("Server has been stopped ....")
     

@@ -23,13 +23,14 @@ class BookUpdateRequest(BaseModel):
 
 class BookResponse(BaseModel):
     
-    uid: uuid.UUID
+    id: uuid.UUID
     title: str
     author: str
     publisher: str | None
     published_date: date | None
     page_count: int | None
     created_at: datetime
+    updated_at: datetime
     
     class Config:
         from_attributes = True
