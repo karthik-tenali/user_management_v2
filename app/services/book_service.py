@@ -35,14 +35,12 @@ class BookService:
         }
     
     def get_book_by_id(self, book_id: uuid.UUID, db: Session, user):
-        if user.role == 'admin':
-            stmt = db.execute(select(Book).where(Book.id == book_id))
-        else:
-            stmt = select(Book).where(
-                Book.id == book_id,
-                Book.owner_id == user.uid
-            )
-        result = db.execute(stmt) # type: ignore
+        stmt = select(Book).where(Book.id == book_id)
+
+        if user.role != "admin":
+            stmt = stmt.where(Book.owner_id == user.uid)
+
+        result = db.execute(stmt)
         return result.scalar_one_or_none()
     
     def create_book(self, book_data: BookCreateRequest, db: Session, owner_id):
@@ -65,9 +63,13 @@ class BookService:
         return book
     
     def delete_book(self, book_id: uuid.UUID, db: Session, user):
-        book = self.get_book_by_id(book_id, db, user)
+        stmt = select(Book).where(Book.id == book_id)
+        book = db.execute(stmt).scalar_one_or_none()
         if not book:
             return None
+        
+        if user.role != 'admin' and book.owner_id != user.uid:
+            raise PermissionError("Not allowed to delete this book")
         
         db.delete(book)
         db.commit()

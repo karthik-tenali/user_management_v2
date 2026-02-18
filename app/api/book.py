@@ -50,7 +50,10 @@ def update_book(book_id: uuid.UUID, book_data:BookUpdateRequest, db: db_dependen
 
 @router.delete("/{book_id}")
 def delete_book(book_id: uuid.UUID, db: db_dependency, user: user_dependency):
-    book = service.delete_book(book_id, db, user)
+    try:
+        book = service.delete_book(book_id, db, user)
+    except PermissionError:
+        raise HTTPException(status_code=403, detail="Not allowed")
     if not book:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
